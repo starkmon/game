@@ -1,46 +1,59 @@
-import { Account, BigNumberish, RpcProvider } from "starknet";
-import { RPCProvider, Query, strTofelt252Felt } from "@dojoengine/core";
+import { Account, BigNumberish, RpcProvider, str } from "starknet";
+import { RPCProvider, strTofelt252Felt } from "@dojoengine/core";
 
-type DojoConstructorArgs = {
-	account_address: string,
-	account_private_key: string,
-	world_address: string,
+type DojoCredentialArgs = {
+	accountAddress: string,
+	accountPrivateKey: string,
+	worldAddress: string,
 	nodeUrl?: string
 };
 
 export default class Dojo {
-	sn_provider: RpcProvider;
 	account: Account;
 	provider: RPCProvider;
 	world: string;
 
-	constructor(args: DojoConstructorArgs) {
-		this.world = args.world_address;
-		this.sn_provider = new RpcProvider({ nodeUrl: args.nodeUrl || 'http://localhost:5050' });
-		this.account = new Account(this.sn_provider, args.account_address, args.account_private_key);
-		this.provider = new RPCProvider(args.world_address, args.nodeUrl);
+	static fromCredentials(args: DojoCredentialArgs): Dojo {
+		const
+			sn_provider = new RpcProvider({ nodeUrl: args.nodeUrl || 'http://localhost:5050' }),
+			account = new Account(sn_provider, args.accountAddress, args.accountPrivateKey);
+
+		return new Dojo(account, args.worldAddress, args.nodeUrl || 'http://localhost:5050');
 	}
 
-	execute(system: string, calldata?: BigNumberish[]) {
-		return this.provider.execute(this.account, system, calldata || []);
+	constructor(account: Account, worldAddress: string, nodeUrl: string) {
+		this.world = worldAddress;
+
+		this.account = account;
+		this.provider = new RPCProvider(worldAddress, nodeUrl);
+	}
+
+	execute(system: string, calldata: BigNumberish[] = []) {
+		return this.provider.execute(this.account, system, calldata);
+
+		// calldata = [strTofelt252Felt(system), calldata.length, ...calldata]
+		// return this.account.execute({
+		// 	contractAddress: this.world,
+		// 	calldata: calldata,
+		// 	entrypoint: 'execute',
+		// });
 	}
 
 	call(system: string, calldata: BigNumberish[] = []) {
 		calldata = [strTofelt252Felt(system), calldata.length, ...calldata]
-		return this.sn_provider.callContract({
+		return this.account.callContract({
 			contractAddress: this.world,
 			calldata: calldata,
 			entrypoint: 'execute',
 		});
 	}
 
-	async entity(component: string, keys: BigNumberish[], offset: number = 0, length: number = 0) {
-
-		const keys_: BigNumberish[] = typeof keys !== 'object' ? [keys] : keys;
-		const calldata = [strTofelt252Felt(component), keys_.length, ...keys_, offset, length];
-		let { result } = await this.sn_provider.callContract({
+	async entity(component: string, keys: string[], offset: number = 0, length: number = 1) {
+		const keysArr: BigNumberish[] = typeof keys !== 'object' ? [keys] : keys;
+		const calldata = [strTofelt252Felt(component), keysArr.length, ...keysArr, offset.toString(), length.toString()];
+		let { result } = await this.account.callContract({
 			contractAddress: this.world,
-			calldata: calldata,
+			calldata,
 			entrypoint: 'entity',
 		});
 
