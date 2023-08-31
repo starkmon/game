@@ -34,14 +34,16 @@ export default class Dojo {
 		});
 	}
 
-	entity(component: string, keys: BigNumberish[], offset: number = 0, length: number = 0) {
+	async entity(component: string, keys: BigNumberish[], offset: number = 0, length: number = 0) {
 
-		const keys_: BigNumberish[] = typeof keys === 'string' ? [keys] : keys;
+		const keys_: BigNumberish[] = typeof keys !== 'object' ? [keys] : keys;
 		const calldata = [strTofelt252Felt(component), keys_.length, ...keys_, offset, length];
-		return this.sn_provider.callContract({
+		let { result } = await this.sn_provider.callContract({
 			contractAddress: this.world,
 			calldata: calldata,
 			entrypoint: 'entity',
 		});
+
+		return result;
 	}
 }
