@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@types/p5": "^1.7.0",
-    "dojo": "https://github.com/shramee/dojo-p5.git#dojo-lib",
+    "dojo": "https://github.com/shramee/dojo-js.git",
     "p5": "^1.7.0"
   }
 }
