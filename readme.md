@@ -1,3 +1,5 @@
+<img width=350 src="https://github.com/shramee/dojo-p5/assets/11048263/c506e56e-e4aa-4ac3-9ebe-e207df15ecba" align=right>
+
 # Dojo P5.js starter
 
 Simple P5.js starter that includes a basic interface to interact with your Dojo world.
