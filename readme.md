@@ -1,4 +1,4 @@
-# Dojo Phaser starter
+# Dojo P5.js starter
 
 ## Directory structure
 

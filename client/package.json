@@ -1,5 +1,5 @@
 {
-  "name": "dojo-phaser",
+  "name": "dojo-p5",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,8 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "dojo": "https://github.com/shramee/dojo-phaser.git#dojo-lib"
+    "@types/p5": "^1.7.0",
+    "dojo": "https://github.com/shramee/dojo-p5.git#dojo-lib",
+    "p5": "^1.7.0"
   }
 }
