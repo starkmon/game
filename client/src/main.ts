@@ -6,7 +6,7 @@ import p5 from 'p5';
 const sketch = (p: p5) => {
   const dojo = setupDojo();
 
-  let pos = [0, 0]
+  let pos = [-9999, -9999]; // Out of canvas
 
   function spawn() {
     dojo.execute('spawn');
