@@ -3,7 +3,6 @@
 ### Directory structure:
 
 ```
-|
 |-- client 
   | - src Your client source
   | - ... Other build related stuff
