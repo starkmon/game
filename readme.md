@@ -1,5 +1,9 @@
 # Dojo P5.js starter
 
+Simple P5.js starter that includes a basic interface to interact with your Dojo world.
+
+Included helper methods in Dojo class - https://github.com/shramee/dojo-js
+
 ## Directory structure
 
 ```
