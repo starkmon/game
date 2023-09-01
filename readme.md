@@ -1,6 +1,6 @@
 # Dojo Phaser starter
 
-### Directory structure:
+### Directory structure
 
 ```
 |-- client 
@@ -31,11 +31,12 @@ katana
 #### Step 2: Build/Test/Deploy
 
 Terminal 2 can be used for building and deploy and later testing as you work on your contracts.
-In another terminal, build your contracts with sozo.
+In another terminal, build your contracts with `sozo build` and deploy with `sozo migrate`.
 
 ```
 cd contracts
 sozo build
+sozo migrate
 ```
 
 #### Step 3
