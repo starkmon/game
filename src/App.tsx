@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import * as Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
-import { revealCreature } from './utils/reveal_creatures';
 import './App.css'
 
 function App() {
   const myRef = useRef(null);
   useEffect(() => {
     if (myRef.current) {
-      revealCreature();
       const gameConfig: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         width: 800,

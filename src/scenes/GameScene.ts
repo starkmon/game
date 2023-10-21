@@ -1,7 +1,4 @@
-/**
- * @TODO Call lookup_creature_on_coordinates() for each coordinate
- * And render something if it returns true.
- */
+import { lookup_creature_on_coordinates } from "../utils/lookup_creature";
 
 type Coords = {
 	x: number,
@@ -17,6 +14,7 @@ export default class GameScene extends Phaser.Scene {
 	map = null;
 	graphics: Phaser.GameObjects.Graphics | null = null;
 	square: Coords | null = null;
+	prevPlayerPosition: { x: number, y: number } | null = null;
 
 	preload() {
 		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
@@ -57,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
 		});
 
 		this.player = this.physics.add.sprite(400, 300, 'player', 1);
-		this.renderSquare(400, 300, 32);
+
 
 		this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 		this.cameras.main.startFollow(this.player);
@@ -65,9 +63,10 @@ export default class GameScene extends Phaser.Scene {
 		this.cursors = this.input.keyboard.createCursorKeys();
 	}
 
-	update(time, delta) {
+	update(time: number, delta: number) {
 		this.updatePlayer();
 		this.updateMap();
+		this.lookUpCreatureOnPlayerPosition();
 	}
 
 	updateMap() {
@@ -119,6 +118,25 @@ export default class GameScene extends Phaser.Scene {
 		else {
 			this.player.anims.stop();
 		}
+	}
+
+	lookUpCreatureOnPlayerPosition() {
+		const currentPlayerPosition = {
+			x: this.player.x,
+			y: this.player.y,
+		};
+	
+		if (!this.prevPlayerPosition ||
+			currentPlayerPosition.x !== this.prevPlayerPosition.x ||
+			currentPlayerPosition.y !== this.prevPlayerPosition.y
+		) {
+			const foundStarkmon = lookup_creature_on_coordinates(currentPlayerPosition.x, currentPlayerPosition.y);
+			if (foundStarkmon) {
+				this.renderSquare(currentPlayerPosition.x, currentPlayerPosition.y, 16);
+			}
+		}
+	
+		this.prevPlayerPosition = currentPlayerPosition;
 	}
 
 	renderSquare(x: number, y: number, size: number): void {
