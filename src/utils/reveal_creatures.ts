@@ -69,8 +69,8 @@ export function revealCreature(seed: BigNumberish) {
 export function split_hash(hash: string): string[] {
 	hash = hash.replace("0x", "");
 	return [
-		hash.slice(0, 32),
-		hash.slice(32),
+		'0x' + hash.slice(0, 32),
+		'0x' + hash.slice(32),
 	]
 }
 
