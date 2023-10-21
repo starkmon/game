@@ -4,6 +4,10 @@ export function pedersen(x: BigNumberish, y: BigNumberish) {
 	return ec.starkCurve.pedersen(x, y)
 }
 
+export const CREATURE_SEED = "0xB1B89B84BB6F354B8568285C6ECAFED311AFF90B0A83462164ED0A7A06A6F5C1";
+export const PROBABILITY = "0x100000"; // Out of 1
+
+
 /*
   let coords: u128 = x.into() * 0x100000000_u128 + y.into();
   let hash = pedersen::pedersen(seed.into(), coords.into());
@@ -74,7 +78,7 @@ export function split_hash(hash: string) {
 	}
 }
 
-export function creatureOnCoordinates(seed: BigNumberish, probability: BigNumberish, x: BigNumberish, y: BigNumberish) {
+export function creatureOnCoordinatesInner(seed: BigNumberish, probability: BigNumberish, x: BigNumberish, y: BigNumberish) {
 	const coords = BigInt(x) * BigInt(0x100000000) + BigInt(y);
 	const hash = pedersen(BigInt(seed), coords);
 
@@ -85,4 +89,8 @@ export function creatureOnCoordinates(seed: BigNumberish, probability: BigNumber
 	} else {
 		return false;
 	}
+}
+
+export function creatureOnCoordinates(x: BigNumberish, y: BigNumberish) {
+	return creatureOnCoordinatesInner(split_hash(CREATURE_SEED).low, PROBABILITY, x, y);
 }
