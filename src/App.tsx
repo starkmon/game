@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
 import './App.css'
+import { getStarknet } from "get-starknet-core";
 
 function App() {
+  const { enable, getAvailableWallets } = getStarknet();
   const myRef = useRef(null);
+  const [wallet, setWallet] = useState<unknown>();
   useEffect(() => {
     if (myRef.current) {
       const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -26,6 +29,11 @@ function App() {
       };
     }
   }, [myRef]);
+
+  
+  getAvailableWallets().then(res => enable(res[0]).then(res => setWallet(res)));
+
+  console.log("Wallet ", wallet);
 
   return (
     <div className="App" ref={myRef}>
