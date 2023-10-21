@@ -8,6 +8,7 @@ type Coords = {
 export default class GameScene extends Phaser.Scene {
 	showDebug = false;
 	player = null;
+	wallet = null;
 	helpText = null;
 	debugGraphics = null;
 	cursors = null;
@@ -18,6 +19,12 @@ export default class GameScene extends Phaser.Scene {
 	spaceKey: Phaser.Input.Keyboard.Key | null = null;
 
 	feedbackText: Phaser.GameObjects.Text | null = null;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	constructor(wallet: any) {
+		super('GameScene');
+		this.wallet = wallet;
+	}
 
 	preload() {
 		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
@@ -153,12 +160,12 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	renderCreature(x: number, y: number): void {
-        // Create a sprite at the specified coordinates using the specified frame from the creatures sprite sheet
-        const creature = this.physics.add.sprite(x, y, 'creatures', Math.floor(Math.random() * 10));
-        
-        // Optionally set any other properties or behaviors for the creature sprite
-        // ...
-    }
+		// Create a sprite at the specified coordinates using the specified frame from the creatures sprite sheet
+		const creature = this.physics.add.sprite(x, y, 'creatures', Math.floor(Math.random() * 10));
+
+		// Optionally set any other properties or behaviors for the creature sprite
+		// ...
+	}
 
 	handleSpacePress() {
 		const foundStarkmon = lookup_creature_on_coordinates(this.player.x, this.player.y);

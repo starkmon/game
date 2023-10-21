@@ -18,7 +18,7 @@ function App() {
         physics: {
           default: 'arcade'
         },
-        scene: [GameScene], // Add your game scenes here
+        scene: [new GameScene(wallet)], // Add your game scenes here
         parent: myRef.current,
       };
 
@@ -28,12 +28,10 @@ function App() {
         game.destroy(true);
       };
     }
-  }, [myRef]);
+  }, [myRef, wallet]);
 
   
   getAvailableWallets().then(res => enable(res[0]).then(res => setWallet(res)));
-
-  console.log("Wallet ", wallet);
 
   return (
     <div className="App" ref={myRef}>
