@@ -66,20 +66,19 @@ export function revealCreature(seed: BigNumberish) {
 	return true;
 }
 
-export function split_hash(hash: string): string[] {
+export function split_hash(hash: string) {
 	hash = hash.replace("0x", "");
-	return [
-		'0x' + hash.slice(0, 32),
-		'0x' + hash.slice(32),
-	]
+	return {
+		high: '0x' + hash.slice(0, -32),
+		low: '0x' + hash.slice(-32),
+	}
 }
 
 export function creatureOnCoordinates(seed: BigNumberish, probability: BigNumberish, x: BigNumberish, y: BigNumberish) {
 	const coords = BigInt(x) * BigInt(0x100000000) + BigInt(y);
 	const hash = pedersen(BigInt(seed), coords);
 
-	const [high, low] = split_hash(hash);
-
+	const { high, low } = split_hash(hash);
 
 	if (BigInt(1) === BigInt(low) % BigInt(probability)) {
 		return revealCreature(high);
