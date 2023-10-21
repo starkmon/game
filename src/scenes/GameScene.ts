@@ -1,71 +1,114 @@
-// src/scenes/GameScene.ts
+/**
+ * @TODO Render a square at some coordinates on the map.
+ */
 
-import * as Phaser from 'phaser';
 
-export default class Example extends Phaser.Scene {
-	tiles = [7, 7, 7, 6, 6, 6, 0, 0, 0, 1, 1, 2, 3, 4, 5];
-	distance = 0;
-	mapHeight = 38;
-	mapWidth = 52;
-	sx = 0;
-	text = "";
-	map = [];
+export default class GameScene extends Phaser.Scene {
+	showDebug = false;
+	player = null;
+	helpText = null;
+	debugGraphics = null;
+	cursors = null;
+	map = null;
 
 	preload() {
-		this.load.image('tiles', 'assets/ground.png');
+		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
+		this.load.tilemapCSV('map', 'assets/catastrophi_level2.csv');
+		this.load.spritesheet('player', 'assets/spaceman.png', { frameWidth: 32, frameHeight: 32 });
 	}
 
 	create() {
-		const mapData = [];
-
-		for (let y = 0; y < this.mapHeight; y++) {
-			const row = [];
-
-			for (let x = 0; x < this.mapWidth; x++) {
-				//  Scatter the tiles so we get more mud and less stones
-				const tileIndex = Phaser.Math.RND.weightedPick(this.tiles);
-
-				row.push(tileIndex);
-			}
-
-			mapData.push(row);
-		}
-
-		this.map = this.make.tilemap({ data: mapData, tileWidth: 16, tileHeight: 16 });
-
+		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
+		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
 		const tileset = this.map.addTilesetImage('tiles');
 		const layer = this.map.createLayer(0, tileset, 0, 0);
 
+		this.anims.create({
+			key: 'left',
+			frames: this.anims.generateFrameNumbers('player', { start: 8, end: 9 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		this.anims.create({
+			key: 'right',
+			frames: this.anims.generateFrameNumbers('player', { start: 1, end: 2 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		this.anims.create({
+			key: 'up',
+			frames: this.anims.generateFrameNumbers('player', { start: 11, end: 13 }),
+			frameRate: 10,
+			repeat: -1
+		});
+		this.anims.create({
+			key: 'down',
+			frames: this.anims.generateFrameNumbers('player', { start: 4, end: 6 }),
+			frameRate: 10,
+			repeat: -1
+		});
+
+		this.player = this.physics.add.sprite(400, 300, 'player', 1);
+
+		this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+		this.cameras.main.startFollow(this.player);
+
+		this.cursors = this.input.keyboard.createCursorKeys();
 	}
 
 	update(time, delta) {
-		//  Any speed as long as 16 evenly divides by it
-		this.sx += 4;
+		this.updatePlayer();
+		this.updateMap();
+	}
 
-		this.distance += this.sx;
+	updateMap() {
+		const origin = this.map.getTileAtWorldXY(this.player.x, this.player.y);
 
-		if (this.sx === 16) {
-			//  Reset and create new strip
+		this.map.forEachTile(tile => {
+			const dist = Phaser.Math.Distance.Snake(
+				origin.x,
+				origin.y,
+				tile.x,
+				tile.y
+			);
 
-			let tile;
-			let prev;
+			tile.setAlpha(1 - 0.1 * dist);
+		});
+	}
 
-			for (let y = 0; y < this.mapHeight; y++) {
-				for (let x = 1; x < this.mapWidth; x++) {
-					tile = this.map.getTileAt(x, y);
-					prev = this.map.getTileAt(x - 1, y);
+	updatePlayer() {
+		this.player.body.setVelocity(0);
 
-					prev.index = tile.index;
+		// Snake movement is 4 directions only
 
-					if (x === this.mapWidth - 1) {
-						tile.index = Phaser.Math.RND.weightedPick(this.tiles);
-					}
-				}
-			}
-
-			this.sx = 0;
+		if (this.cursors.left.isDown) {
+			this.player.body.setVelocityX(-100);
+		}
+		else if (this.cursors.right.isDown) {
+			this.player.body.setVelocityX(100);
+		}
+		else if (this.cursors.up.isDown) {
+			this.player.body.setVelocityY(-100);
+		}
+		else if (this.cursors.down.isDown) {
+			this.player.body.setVelocityY(100);
 		}
 
-		this.cameras.main.scrollX = this.sx;
+		// Update the animation last and give left/right animations precedence over up/down animations
+		if (this.cursors.left.isDown) {
+			this.player.anims.play('left', true);
+		}
+		else if (this.cursors.right.isDown) {
+			this.player.anims.play('right', true);
+		}
+		else if (this.cursors.up.isDown) {
+			this.player.anims.play('up', true);
+		}
+		else if (this.cursors.down.isDown) {
+			this.player.anims.play('down', true);
+		}
+		else {
+			this.player.anims.stop();
+		}
 	}
 }
