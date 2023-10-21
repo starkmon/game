@@ -1,7 +1,7 @@
-/**
- * @TODO Render a square at some coordinates on the map.
- */
-
+type Coords = {
+	x: number,
+	y: number,
+}
 
 export default class GameScene extends Phaser.Scene {
 	showDebug = false;
@@ -10,6 +10,8 @@ export default class GameScene extends Phaser.Scene {
 	debugGraphics = null;
 	cursors = null;
 	map = null;
+	graphics: Phaser.GameObjects.Graphics | null = null;
+	square: Coords | null = null;
 
 	preload() {
 		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
@@ -22,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
 		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
 		const tileset = this.map.addTilesetImage('tiles');
 		const layer = this.map.createLayer(0, tileset, 0, 0);
+		this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000 }, fillStyle: { color: 0xff0000 } });
 
 		this.anims.create({
 			key: 'left',
@@ -49,6 +52,7 @@ export default class GameScene extends Phaser.Scene {
 		});
 
 		this.player = this.physics.add.sprite(400, 300, 'player', 1);
+		this.renderSquare(400, 300, 32);
 
 		this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 		this.cameras.main.startFollow(this.player);
@@ -111,4 +115,11 @@ export default class GameScene extends Phaser.Scene {
 			this.player.anims.stop();
 		}
 	}
+
+	renderSquare(x: number, y: number, size: number): void {
+        if (!this.graphics) return;
+
+        this.graphics.fillStyle(0xff0000, 1);  // Red color
+        this.graphics.fillRect(x, y, size, size);
+    }
 }
