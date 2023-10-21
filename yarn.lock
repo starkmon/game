@@ -360,9 +360,9 @@ debug@^4.3.4:
   dependencies:
     ms "2.1.2"
 
-"dojo@https://github.com/shramee/dojo-p5.git#dojo-lib":
+"dojo@https://github.com/shramee/dojo-js.git":
   version "0.1.0"
-  resolved "https://github.com/shramee/dojo-p5.git#343ddc7ca6a1657bc8536a920b561ebff1f96797"
+  resolved "https://github.com/shramee/dojo-js.git#3c792eb0927259f1ef9ab9ef6251fa2b9f873436"
   dependencies:
     "@dojoengine/core" "^0.0.17"
     starknet "^5.14.1"
