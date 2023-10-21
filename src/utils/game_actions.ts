@@ -8,3 +8,7 @@ export function lookup_creature_on_coordinates(x: number, y: number) {
     const yToBigInt = Math.round(y) as BigNumberish;
     return creatureOnCoordinates(CREATURE_SEED, PROBABILITY, xToBigInt , yToBigInt);
 }
+
+export function claim_creature_on_coordinates(x: number, y: number) {
+    console.log("Claiming starkmon!!");
+}

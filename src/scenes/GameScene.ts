@@ -1,4 +1,4 @@
-import { lookup_creature_on_coordinates } from "../utils/lookup_creature";
+import { claim_creature_on_coordinates, lookup_creature_on_coordinates } from "../utils/game_actions";
 
 type Coords = {
 	x: number,
@@ -15,11 +15,15 @@ export default class GameScene extends Phaser.Scene {
 	graphics: Phaser.GameObjects.Graphics | null = null;
 	square: Coords | null = null;
 	prevPlayerPosition: { x: number, y: number } | null = null;
+	spaceKey: Phaser.Input.Keyboard.Key | null = null;
+
+	feedbackText: Phaser.GameObjects.Text | null = null;
 
 	preload() {
 		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
 		this.load.tilemapCSV('map', 'assets/catastrophi_level2.csv');
 		this.load.spritesheet('player', 'assets/spaceman.png', { frameWidth: 32, frameHeight: 32 });
+		this.load.spritesheet('creatures', 'assets/creatures.png', { frameWidth: 32, frameHeight: 32 });
 	}
 
 	create() {
@@ -28,6 +32,12 @@ export default class GameScene extends Phaser.Scene {
 		const tileset = this.map.addTilesetImage('tiles');
 		const layer = this.map.createLayer(0, tileset, 0, 0);
 		this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000 }, fillStyle: { color: 0xff0000 } });
+
+		this.feedbackText = this.add.text(400, 300, '', {
+			fontSize: '24px',
+			fill: '#ffffff',
+			align: 'left'
+		}).setOrigin(0.9, -10).setVisible(false);
 
 		this.anims.create({
 			key: 'left',
@@ -61,6 +71,8 @@ export default class GameScene extends Phaser.Scene {
 		this.cameras.main.startFollow(this.player);
 
 		this.cursors = this.input.keyboard.createCursorKeys();
+		this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+		this.spaceKey.on('down', this.handleSpacePress, this);
 	}
 
 	update(time: number, delta: number) {
@@ -125,24 +137,46 @@ export default class GameScene extends Phaser.Scene {
 			x: this.player.x,
 			y: this.player.y,
 		};
-	
+
 		if (!this.prevPlayerPosition ||
 			currentPlayerPosition.x !== this.prevPlayerPosition.x ||
 			currentPlayerPosition.y !== this.prevPlayerPosition.y
 		) {
 			const foundStarkmon = lookup_creature_on_coordinates(currentPlayerPosition.x, currentPlayerPosition.y);
 			if (foundStarkmon) {
-				this.renderSquare(currentPlayerPosition.x, currentPlayerPosition.y, 16);
+				this.renderCreature(currentPlayerPosition.x, currentPlayerPosition.y);
+				this.setFeedbackText('Found a creature!');
 			}
 		}
-	
+
 		this.prevPlayerPosition = currentPlayerPosition;
 	}
 
-	renderSquare(x: number, y: number, size: number): void {
-		if (!this.graphics) return;
+	renderCreature(x: number, y: number): void {
+        // Create a sprite at the specified coordinates using the specified frame from the creatures sprite sheet
+        const creature = this.physics.add.sprite(x, y, 'creatures', Math.floor(Math.random() * 10));
+        
+        // Optionally set any other properties or behaviors for the creature sprite
+        // ...
+    }
 
-		this.graphics.fillStyle(0xff0000, 1);  // Red color
-		this.graphics.fillRect(x, y, size, size);
+	handleSpacePress() {
+		const foundStarkmon = lookup_creature_on_coordinates(this.player.x, this.player.y);
+		if (foundStarkmon) {
+			claim_creature_on_coordinates(this.player.x, this.player.y);
+			this.setFeedbackText('A creature is being claimed!');
+
+		}
+	}
+
+	setFeedbackText(message: string) {
+		this.feedbackText!.setText(message);
+		this.feedbackText!.setVisible(true);
+		// Hide the feedback text after 2 seconds
+		this.time.delayedCall(2000, () => {
+			if (this.feedbackText) {
+				this.feedbackText.setVisible(false);
+			}
+		}, null, this);
 	}
 }
