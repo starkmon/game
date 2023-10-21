@@ -1,3 +1,8 @@
+/**
+ * @TODO Call lookup_creature_on_coordinates() for each coordinate
+ * And render something if it returns true.
+ */
+
 type Coords = {
 	x: number,
 	y: number,
@@ -117,9 +122,9 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	renderSquare(x: number, y: number, size: number): void {
-        if (!this.graphics) return;
+		if (!this.graphics) return;
 
-        this.graphics.fillStyle(0xff0000, 1);  // Red color
-        this.graphics.fillRect(x, y, size, size);
-    }
+		this.graphics.fillStyle(0xff0000, 1);  // Red color
+		this.graphics.fillRect(x, y, size, size);
+	}
 }
