@@ -24,44 +24,46 @@ export function pedersen(x: BigNumberish, y: BigNumberish) {
   }
 */
 
-export function revealCreature(seed) {
+export function revealCreature(seed: BigNumberish) {
 	// @TODO: Return a creature randomly.
 
-	const creatures = data.creatures();
-	const creaturesLen = creatures.length;
-	const creatureIndex = seed % creaturesLen;
-	const name = creatures[creatureIndex];
+	// const creatures = data.creatures();
+	// const creaturesLen = creatures.length;
+	// const creatureIndex = seed % creaturesLen;
+	// const name = creatures[creatureIndex];
 
-	const hash = pedersen(BigInt(seed), 1);
-	let tierSeed = 0;
-	let statSeed;
+	// const hash = pedersen(BigInt(seed), 1);
+	// let tierSeed = 0;
+	// let statSeed;
 
-	const { Narrow, Wide } = split_hash(hash);
-	if (Narrow) {
-		statSeed = Narrow;
-	} else if (Wide) {
-		const [low, high] = Wide;
-		tierSeed = high;
-		statSeed = low;
-	}
+	// const { Narrow, Wide } = split_hash(hash);
+	// if (Narrow) {
+	// 	statSeed = Narrow;
+	// } else if (Wide) {
+	// 	const [low, high] = Wide;
+	// 	tierSeed = high;
+	// 	statSeed = low;
+	// }
 
-	const { tiersManager, tiers } = data.TiersManager.get();
-	const tierDraw = BigInt(tierSeed) % BigInt(tiersManager.probability);
-	let i = 0;
+	// const { tiersManager, tiers } = data.TiersManager.get();
+	// const tierDraw = BigInt(tierSeed) % BigInt(tiersManager.probability);
+	// let i = 0;
 
-	while (tierDraw < tiers[i].prob_max) {
-		i++;
-	}
-	const tier = tiers[i];
+	// while (tierDraw < tiers[i].prob_max) {
+	// 	i++;
+	// }
+	// const tier = tiers[i];
 
-	let stat = BigInt(tier.mult_min) + BigInt(tier.mult_max) - BigInt(tier.mult_min);
-	stat += statSeed % (BigInt(tier.mult_max - tier.mult_min)); // Add random stat
+	// let stat = BigInt(tier.mult_min) + BigInt(tier.mult_max) - BigInt(tier.mult_min);
+	// stat += statSeed % (BigInt(tier.mult_max - tier.mult_min)); // Add random stat
 
-	return {
-		id: { high: 0, low: BigInt(seed) },
-		name,
-		stat: Number(stat),
-	};
+	// return {
+	// 	id: { high: 0, low: BigInt(seed) },
+	// 	name,
+	// 	stat: Number(stat),
+	// };
+
+	return true;
 }
 
 export function split_hash(hash: string): string[] {
