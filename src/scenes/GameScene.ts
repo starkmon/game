@@ -1,6 +1,8 @@
-import { claim_creature_on_coordinates, creature_details_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
 
 type Coords = { x: number, y: number }
+import { Coords, CreatureDetails } from "../types/types";
+import { claim_creature_on_coordinates, creature_details_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
+import { hexToText } from "../utils/utils";
 
 export default class GameScene extends Phaser.Scene {
 	showDebug = false;
@@ -20,12 +22,15 @@ export default class GameScene extends Phaser.Scene {
 	lookupsDone: { [key: string]: { [key: string]: number } } = {};
 
 
+	showModal: (show: boolean, details: CreatureDetails) => void = () => { };
+
 	feedbackText: Phaser.GameObjects.Text | null = null;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	constructor(wallet: any) {
+	constructor(wallet: any, handleModalVisibility: (show: boolean, details: CreatureDetails) => void) {
 		super('GameScene');
 		this.wallet = wallet;
+		this.showModal = handleModalVisibility;
 	}
 
 	preload() {
@@ -203,20 +208,17 @@ export default class GameScene extends Phaser.Scene {
 		});
 	}
 
-	handleSpacePress() {
-		const foundStarkmon = creature_on_coordinates(this.player.x, this.player.y);
-		if (foundStarkmon) {
-			claim_creature_on_coordinates(this.player.x, this.player.y);
-			this.setFeedbackText('A creature is being claimed!');
+	async handleSpacePress() {
+		// }
+		// if (creature_on_coordinates(this.player.x, this.player.y)) {
+		const creatureDetails =
+			await creature_details_on_coordinates(Math.round(this.player.x), Math.round(this.player.y)) as unknown as CreatureDetails;
+		const { id, name, stat } = creatureDetails;
+		const parsedName = hexToText(name);
+		this.showModal(true, { id, name: parsedName, stat });
+		this.setFeedbackText('Checking Starkmon details...');
+		// }
 
-		}
-	}
-
-	renderSquare(x: number, y: number, size: number): void {
-		if (!this.graphics) return;
-
-		this.graphics.fillStyle(0xff0000, 1);  // Red color
-		this.graphics.fillRect(x, y, size, size);
 	}
 
 	setFeedbackText(message: string) {
