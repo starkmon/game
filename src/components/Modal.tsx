@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CreatureDetails } from '../types/types';
 import styles from './Modal.module.css';
 
@@ -9,15 +10,30 @@ interface ModalProps extends Partial<HTMLDivElement> {
 }
 
 export function Modal({ show, onClose, creatureDetails, handleClaim }: ModalProps) {
+  const [starkmonBeingClaimed, setStarkmonBeingClaimed] = useState(false);
+
   if (!show) {
     return null;
   }
 
-  const { name, tier } = creatureDetails;
+  const handleClaimSubmission = () => {
+    if (!handleClaim) {
+      return;
+    }
+    handleClaim();
+    setStarkmonBeingClaimed(true);
+  }
 
-  return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
+  const renderModalContent = () => {
+    if (starkmonBeingClaimed) {
+      return (<>
+        <div>
+          <h4>Starkmon is being claimed...</h4>
+          <p>You can continue your game after accept or decline to claim</p>
+        </div>
+      </>)
+    } else {
+      return (<>
         <img
           style={{
             backgroundImage: `url(${import.meta.env.VITE_PUBLIC_URL}/assets/starkmons/${name}.png)`
@@ -25,13 +41,25 @@ export function Modal({ show, onClose, creatureDetails, handleClaim }: ModalProp
           width={256}
           height={256}
         />
-        <button onClick={onClose} className={styles.closeButton} />
         <div>
           <h4>Starkmon Details</h4>
           <p>Name: {name}</p>
           <p>Tier: {tier}</p>
         </div>
-        <button onClick={handleClaim} className={styles.claimButton}>Claim</button>
+        <button onClick={handleClaimSubmission} className={styles.claimButton}>Claim</button>
+      </>)
+    }
+  }
+
+  const { name, tier } = creatureDetails;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <button onClick={onClose} className={styles.closeButton} />
+        {
+          renderModalContent()
+        }
       </div>
     </div>
   );
