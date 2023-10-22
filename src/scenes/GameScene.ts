@@ -1,7 +1,7 @@
 
 type Coords = { x: number, y: number }
 import { Coords, CreatureDetails } from "../types/types";
-import { claim_creature_on_coordinates, creature_details_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
+import { creature_details_on_coordinates, creature_on_coordinates, creature_tier } from "../utils/game_actions";
 import { hexToText } from "../utils/utils";
 
 export default class GameScene extends Phaser.Scene {
@@ -76,7 +76,6 @@ export default class GameScene extends Phaser.Scene {
 
 		this.spawnCoords = { x: 0x13bb - 32, y: 10 - 32, };
 
-		0x13bb
 		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
 		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
 		const tileset = this.map.addTilesetImage('tiles');
@@ -197,7 +196,7 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	renderLookedUpCreatures() {
-		let { x, y, pixelX, pixelY, width, height } = this.map.getTileAtWorldXY(this.player.x, this.player.y);
+		const { x, y, pixelX, pixelY, width, height } = this.map.getTileAtWorldXY(this.player.x, this.player.y);
 
 		this.creaturesAtCoords.forEach(({ x: cx, y: cy }) => {
 			const normalisedX = pixelX + (cx - x) * width;
@@ -213,10 +212,12 @@ export default class GameScene extends Phaser.Scene {
 		// if (creature_on_coordinates(this.player.x, this.player.y)) {
 		const creatureDetails =
 			await creature_details_on_coordinates(Math.round(this.player.x), Math.round(this.player.y)) as unknown as CreatureDetails;
-		const { id, name, stat } = creatureDetails;
-		const parsedName = hexToText(name);
-		this.showModal(true, { id, name: parsedName, stat });
-		this.setFeedbackText('Checking Starkmon details...');
+			const { id, name, stat } = creatureDetails;
+			const parsedName = hexToText(name);
+			const tier = creature_tier(parseInt(stat!, 16));
+			
+			this.showModal(true, { id, name: parsedName?.toString(), stat, tier });
+			this.setFeedbackText('Checking Starkmon details...');
 		// }
 
 	}

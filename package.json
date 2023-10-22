@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/node": "^20.8.7",
+    "env": "^0.0.2",
     "get-starknet": "^3.0.1",
     "phaser": "3",
     "react": "^18.2.0",
