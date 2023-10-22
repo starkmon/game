@@ -7,8 +7,8 @@ export const starknetConfig = {
 
 export const contractsConfig: { [key: string]: string } = {
 	WORLD: "0x1cabeaae9e57c1358c1f2392362cc2f3f6b869f548959455222d8446f9f21a9",
-	CREATURE_SYSTEM: "0x0270d3673aaf3775d1271ef64e23541b7a728bdee9373e98359065ba03f62d24",
-	ERC721: "0x04af4a680f9139b65a5dbebfb74e978b08c757205903bf20f10f0e7fa560e92d",
+	CREATURE_SYSTEM: "0x05e3959b4351e1ac488e240eb97d52e25ed3b22d3e600976afa711e7f444ed0f",
+	ERC721: "0x069ac89ab195e0118a55964ba9534b5c9487fd2b918564f47e5836bd561142da",
 };
 
 class StarkUtils {
@@ -18,8 +18,18 @@ class StarkUtils {
 		}
 
 		const entry_point_selector = selector.getSelectorFromName(entry_point)
-		const response = await fetch("https://alpha4.starknet.io/feeder_gateway/call_contract?blockNumber=pending", {
-			body: JSON.stringify({ contract_address, entry_point_selector, calldata, }),
+		const response = await fetch(starknetConfig.rpc, {
+			body: JSON.stringify(
+				{
+					"id": 1,
+					"jsonrpc": "2.0",
+					"method": "starknet_call",
+					"params": [
+						{ contract_address, entry_point_selector, calldata, },
+						"latest"
+					]
+				}
+			),
 			method: "POST",
 		});
 
