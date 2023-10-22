@@ -4,9 +4,24 @@ export function pedersen(x: BigNumberish, y: BigNumberish) {
 	return ec.starkCurve.pedersen(x, y)
 }
 
-export const CREATURE_SEED = "0xB1B89B84BB6F354B8568285C6ECAFED311AFF90B0A83462164ED0A7A06A6F5C1";
-export const PROBABILITY = "0x100000"; // Out of 1
+export const creatureRevealConfig = {
+	// Updated after contract call
+	// export const CREATURE_SEED = "0xB1B89B84BB6F354B8568285C6ECAFED311AFF90B0A83462164ED0A7A06A6F5C1";
+	CREATURE_SEED: "0x11AFF90B0A83462164ED0A7A06A6F5C1",
+	PROBABILITY: "0x1000", // Out of 
+};
 
+export async function fetch_creature_reveal_data() {
+	const resp = await starknetUtils.callContract(
+		"CREATURE_SYSTEM",
+		"creature_reveal_data"
+	);
+
+	if (resp?.result && resp?.result.length === 2) {
+		creatureRevealConfig.CREATURE_SEED = resp?.result[0];
+		creatureRevealConfig.PROBABILITY = resp?.result[1];
+	}
+}
 
 /*
   let coords: u128 = x.into() * 0x100000000_u128 + y.into();

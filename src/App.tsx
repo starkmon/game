@@ -3,6 +3,7 @@ import * as Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
 import './App.css'
 import { StarknetWindowObject, connect } from "get-starknet";
+import { fetch_creature_reveal_data } from './utils/reveal_creatures';
 
 function App() {
   const myRef = useRef(null);
@@ -10,8 +11,9 @@ function App() {
   useEffect(() => {
     if (myRef.current) {
       if (!starknetWallet) {
-        connect({ modalMode: 'neverAsk' }).then(starknet => {
+        connect({ modalMode: 'neverAsk' }).then(async starknet => {
           setWallet(starknet);
+          await fetch_creature_reveal_data()
         });
       }
       const gameConfig: Phaser.Types.Core.GameConfig = {
