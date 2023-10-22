@@ -8,11 +8,16 @@ export function pedersen(x: BigNumberish, y: BigNumberish) {
 export const creatureRevealConfig = {
 	// Updated after contract call
 	// export const CREATURE_SEED = "0xB1B89B84BB6F354B8568285C6ECAFED311AFF90B0A83462164ED0A7A06A6F5C1";
+	SYNC: "pending",
 	CREATURE_SEED: "0x11AFF90B0A83462164ED0A7A06A6F5C1",
 	PROBABILITY: "0x1000", // Out of 
 };
 
 export async function fetch_creature_reveal_data() {
+	if (creatureRevealConfig.SYNC != "pending") {
+		return;
+	}
+	creatureRevealConfig.SYNC = "fetching";
 	const resp = await starknetUtils.callContract(
 		"CREATURE_SYSTEM",
 		"creature_reveal_data"
@@ -21,6 +26,9 @@ export async function fetch_creature_reveal_data() {
 	if (resp?.result && resp?.result.length === 2) {
 		creatureRevealConfig.CREATURE_SEED = resp?.result[0];
 		creatureRevealConfig.PROBABILITY = resp?.result[1];
+		creatureRevealConfig.SYNC = "done";
+	} else {
+		creatureRevealConfig.SYNC = "pending";
 	}
 }
 
@@ -109,21 +117,18 @@ export function creatureOnCoordinatesInner(seed: BigNumberish, probability: BigN
 
 export function creatureOnCoordinates(x: BigNumberish, y: BigNumberish) {
 	const { CREATURE_SEED, PROBABILITY } = creatureRevealConfig;
-	console.log(CREATURE_SEED, PROBABILITY, x, y);
 
 	return creatureOnCoordinatesInner(CREATURE_SEED, PROBABILITY, x, y);
 }
 
 export async function getCreatureFromContract(x: string, y: string) {
 	if (creatureOnCoordinates(x, y)) {
-		console.log("revealing creature on ", x, y)
 		return await starknetUtils.callContract("CREATURE_SYSTEM", "creature_on_coordinates", [x, y])
 	}
 }
 
 export async function claimCreatureFromContract(x: string, y: string) {
 	if (creatureOnCoordinates(x, y)) {
-		console.log("revealing creature on ", x, y)
 		// @TODO invoke claim transaction
 		// return await starknetUtils.callContract("CREATURE_SYSTEM", "creature_on_coordinates", [x, y])
 	}
