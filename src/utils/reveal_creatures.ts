@@ -1,4 +1,5 @@
-import snjs, { BigNumberish, ec } from "starknet";
+import { BigNumberish, ec } from "starknet";
+import starknetUtils from './starknetUtils';
 
 export function pedersen(x: BigNumberish, y: BigNumberish) {
 	return ec.starkCurve.pedersen(x, y)
@@ -107,5 +108,23 @@ export function creatureOnCoordinatesInner(seed: BigNumberish, probability: BigN
 }
 
 export function creatureOnCoordinates(x: BigNumberish, y: BigNumberish) {
-	return creatureOnCoordinatesInner(split_hash(CREATURE_SEED).low, PROBABILITY, x, y);
+	const { CREATURE_SEED, PROBABILITY } = creatureRevealConfig;
+	console.log(CREATURE_SEED, PROBABILITY, x, y);
+
+	return creatureOnCoordinatesInner(CREATURE_SEED, PROBABILITY, x, y);
+}
+
+export async function getCreatureFromContract(x: string, y: string) {
+	if (creatureOnCoordinates(x, y)) {
+		console.log("revealing creature on ", x, y)
+		return await starknetUtils.callContract("CREATURE_SYSTEM", "creature_on_coordinates", [x, y])
+	}
+}
+
+export async function claimCreatureFromContract(x: string, y: string) {
+	if (creatureOnCoordinates(x, y)) {
+		console.log("revealing creature on ", x, y)
+		// @TODO invoke claim transaction
+		// return await starknetUtils.callContract("CREATURE_SYSTEM", "creature_on_coordinates", [x, y])
+	}
 }

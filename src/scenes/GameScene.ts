@@ -1,4 +1,4 @@
-import { claim_creature_on_coordinates, lookup_creature_on_coordinates } from "../utils/game_actions";
+import { claim_creature_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
 
 type Coords = {
 	x: number,
@@ -149,7 +149,7 @@ export default class GameScene extends Phaser.Scene {
 			currentPlayerPosition.x !== this.prevPlayerPosition.x ||
 			currentPlayerPosition.y !== this.prevPlayerPosition.y
 		) {
-			const foundStarkmon = lookup_creature_on_coordinates(currentPlayerPosition.x, currentPlayerPosition.y);
+			const foundStarkmon = creature_on_coordinates(currentPlayerPosition.x, currentPlayerPosition.y);
 			if (foundStarkmon) {
 				this.renderCreature(currentPlayerPosition.x, currentPlayerPosition.y);
 				this.setFeedbackText('Found a creature!');
@@ -168,7 +168,7 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	handleSpacePress() {
-		const foundStarkmon = lookup_creature_on_coordinates(this.player.x, this.player.y);
+		const foundStarkmon = creature_on_coordinates(this.player.x, this.player.y);
 		if (foundStarkmon) {
 			claim_creature_on_coordinates(this.player.x, this.player.y);
 			this.setFeedbackText('A creature is being claimed!');
