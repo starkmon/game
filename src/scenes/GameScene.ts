@@ -12,7 +12,7 @@ export default class GameScene extends Phaser.Scene {
 	helpText = null;
 	debugGraphics = null;
 	cursors = null;
-	map = null;
+	map: Phaser.Tilemaps.Tilemap | null = null;
 	graphics: Phaser.GameObjects.Graphics | null = null;
 	square: Coords | null = null;
 	prevPlayerPosition: { x: number, y: number } | null = null;
@@ -30,7 +30,7 @@ export default class GameScene extends Phaser.Scene {
 		this.load.image('tiles', 'assets/catastrophi_tiles_32.png');
 		this.load.tilemapCSV('map', 'assets/catastrophi_level2.csv');
 		this.load.spritesheet('player', 'assets/spaceman.png', { frameWidth: 32, frameHeight: 32 });
-		this.load.spritesheet('creatures', 'assets/creatures.png', { frameWidth: 32, frameHeight: 32 });
+		this.load.spritesheet('creatures', 'assets/question-mark.png', { frameWidth: 32, frameHeight: 32 });
 	}
 
 	create() {
@@ -145,14 +145,30 @@ export default class GameScene extends Phaser.Scene {
 			y: this.player.y,
 		};
 
+		const distance = 100; // Set the distance around the player you want to check
+
 		if (!this.prevPlayerPosition ||
 			currentPlayerPosition.x !== this.prevPlayerPosition.x ||
 			currentPlayerPosition.y !== this.prevPlayerPosition.y
 		) {
-			const foundStarkmon = creature_on_coordinates(currentPlayerPosition.x, currentPlayerPosition.y);
-			if (foundStarkmon) {
-				this.renderCreature(currentPlayerPosition.x, currentPlayerPosition.y);
-				this.setFeedbackText('Found a creature!');
+
+			// Iterate through a range of positions around the player
+			for (let xOffset = -distance; xOffset <= distance; xOffset += 32) {  // Assuming tile size is 32
+				for (let yOffset = -distance; yOffset <= distance; yOffset += 32) {
+					const x = currentPlayerPosition.x + xOffset;
+					const y = currentPlayerPosition.y + yOffset;
+
+					// Optionally, you might want to skip checking the player's exact position 
+					// if you've already checked it elsewhere
+					if (x === currentPlayerPosition.x && y === currentPlayerPosition.y) {
+						continue;
+					}
+
+					const foundStarkmon = creature_on_coordinates(x, y);
+					if (foundStarkmon) {
+						this.renderCreature(x, y);
+					}
+				}
 			}
 		}
 
@@ -161,7 +177,7 @@ export default class GameScene extends Phaser.Scene {
 
 	renderCreature(x: number, y: number): void {
 		// Create a sprite at the specified coordinates using the specified frame from the creatures sprite sheet
-		const creature = this.physics.add.sprite(x, y, 'creatures', Math.floor(Math.random() * 10));
+		const creature = this.physics.add.sprite(x, y, 'creatures');
 
 		// Optionally set any other properties or behaviors for the creature sprite
 		// ...
@@ -174,6 +190,13 @@ export default class GameScene extends Phaser.Scene {
 			this.setFeedbackText('A creature is being claimed!');
 
 		}
+	}
+
+	renderSquare(x: number, y: number, size: number): void {
+		if (!this.graphics) return;
+	
+		this.graphics.fillStyle(0xff0000, 1);  // Red color
+		this.graphics.fillRect(x, y, size, size);
 	}
 
 	setFeedbackText(message: string) {
