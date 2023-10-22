@@ -74,7 +74,8 @@ export default class GameScene extends Phaser.Scene {
 			y: 0x100 + Math.random() * 0x10000
 		};
 
-		this.spawnCoords = { x: 0x13bb - 32, y: 10 - 32, };
+		this.spawnCoords = { x: 0x13bb - 12, y: 10 - 5, };
+
 
 		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
 		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
@@ -208,18 +209,21 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	async handleSpacePress() {
-		// }
-		// if (creature_on_coordinates(this.player.x, this.player.y)) {
-		const creatureDetails =
-			await creature_details_on_coordinates(Math.round(this.player.x), Math.round(this.player.y)) as unknown as CreatureDetails;
-			const { id, name, stat } = creatureDetails;
+		let { x, y } = this.map.getTileAtWorldXY(this.player.x, this.player.y);
+
+		x += this.spawnCoords.x;
+		y += this.spawnCoords.y;
+		console.log(x, y);
+
+		const { result: creatureDetails } = await creature_details_on_coordinates(x, y);
+		if (creatureDetails) {
+			const [id, id_high, name, stat] = creatureDetails;
 			const parsedName = hexToText(name);
 			const tier = creature_tier(parseInt(stat!, 16));
-			
+
 			this.showModal(true, { id, name: parsedName?.toString(), stat, tier });
 			this.setFeedbackText('Checking Starkmon details...');
-		// }
-
+		}
 	}
 
 	setFeedbackText(message: string) {
