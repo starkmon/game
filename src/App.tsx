@@ -2,14 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
 import './App.css'
-import { getStarknet } from "get-starknet-core";
+import { StarknetWindowObject, connect } from "get-starknet";
 
 function App() {
-  const { enable, getAvailableWallets } = getStarknet();
   const myRef = useRef(null);
-  const [wallet, setWallet] = useState<unknown>();
+  const [starknetWallet, setWallet] = useState<StarknetWindowObject | null>(null);
   useEffect(() => {
     if (myRef.current) {
+      if (!starknetWallet) {
+        connect({ modalMode: 'neverAsk' }).then(starknet => {
+          console.log(starknet);
+
+          setWallet(starknet);
+        });
+      }
       const gameConfig: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         width: 800,
@@ -18,7 +24,7 @@ function App() {
         physics: {
           default: 'arcade'
         },
-        scene: [new GameScene(wallet)], // Add your game scenes here
+        scene: [new GameScene(starknetWallet)], // Add your game scenes here
         parent: myRef.current,
       };
 
@@ -28,14 +34,19 @@ function App() {
         game.destroy(true);
       };
     }
-  }, [myRef, wallet]);
-
-  
-  getAvailableWallets().then(res => enable(res[0]).then(res => setWallet(res)));
+  }, [myRef, starknetWallet]);
 
   return (
-    <div className="App" ref={myRef}>
-      {/* Your React components */}
+    <div className="App">
+      {!starknetWallet || !starknetWallet.isConnected ?
+        <>
+          <h4>Wallet not connected, exploration only mode.</h4>
+          <button onClick={() => { }}>
+            Connect wallet
+          </button>
+        </> : <></>
+      }
+      <div ref={myRef}></div>
     </div>
   );
 }
