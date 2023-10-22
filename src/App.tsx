@@ -11,8 +11,6 @@ function App() {
     if (myRef.current) {
       if (!starknetWallet) {
         connect({ modalMode: 'neverAsk' }).then(starknet => {
-          console.log(starknet);
-
           setWallet(starknet);
         });
       }
@@ -41,7 +39,7 @@ function App() {
       {!starknetWallet || !starknetWallet.isConnected ?
         <>
           <h4>Wallet not connected, exploration only mode.</h4>
-          <button onClick={() => { }}>
+          <button onClick={() => connect()}>
             Connect wallet
           </button>
         </> : <></>
