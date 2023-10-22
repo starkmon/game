@@ -1,6 +1,7 @@
-import { selector, num } from 'starknet';
+import { selector, num, BigNumberish } from 'starknet';
 
 import { config } from "./reveal_creatures";
+import { StarknetWindowObject } from 'get-starknet';
 
 export const starknetConfig = {
 	rpc: "https://starknet-goerli.g.alchemy.com/v2/Sxk1XpE0frZCVi3kHq9rESWNwP3dCHYC/"
@@ -38,6 +39,12 @@ class StarkUtils {
 
 		return await response.json();
 	}
+
+	async operate(starknet: StarknetWindowObject, contractAddress: BigNumberish, entrypoint: BigNumberish, calldata: BigNumberish[]) {
+		console.log({ contractAddress, entrypoint, calldata, });
+
+		return starknet.account.execute({ contractAddress, entrypoint, calldata, },);
+	};
 }
 
 export default new StarkUtils();

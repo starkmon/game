@@ -20,8 +20,6 @@ export default class GameScene extends Phaser.Scene {
 	spawnCoords: Coords = { x: 0, y: 0 };
 	creaturesAtCoords: Coords[] = [];
 	lookupsDone: { [key: string]: { [key: string]: number } } = {};
-
-
 	showModal: (show: boolean, details: CreatureDetails) => void = () => { };
 
 	feedbackText: Phaser.GameObjects.Text | null = null;
@@ -215,14 +213,14 @@ export default class GameScene extends Phaser.Scene {
 		y += this.spawnCoords.y;
 		console.log(x, y);
 
+		this.setFeedbackText('Checking Starkmon details...');
 		const { result: creatureDetails } = await creature_details_on_coordinates(x, y);
 		if (creatureDetails) {
 			const [id, id_high, name, stat] = creatureDetails;
 			const parsedName = hexToText(name);
 			const tier = creature_tier(parseInt(stat!, 16));
 
-			this.showModal(true, { id, name: parsedName?.toString(), stat, tier });
-			this.setFeedbackText('Checking Starkmon details...');
+			this.showModal(true, { id, name: parsedName?.toString(), stat, tier, x, y });
 		}
 	}
 

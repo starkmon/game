@@ -5,12 +5,9 @@ import './App.css'
 import { StarknetWindowObject, connect } from "get-starknet";
 import { fetch_creature_reveal_data } from './utils/reveal_creatures';
 import { Modal } from './components/Modal';
-
-interface CreatureDetails {
-  id?: string,
-  name?: string,
-  stat?: string,
-}
+import { selector } from 'starknet';
+import starknetUtils, { contractsConfig } from './utils/starknetUtils';
+import { CreatureDetails } from './types/types';
 
 function App() {
   const myRef = useRef(null);
@@ -62,11 +59,24 @@ function App() {
         </> : <></>
       }
       {showModal &&
-        <Modal show={showModal} onClose={() => handleModalVisibility(false, creatureDetails)} creatureDetails={creatureDetails} />
+        <Modal
+          show={showModal}
+          onClose={() => handleModalVisibility(false, creatureDetails)}
+          creatureDetails={creatureDetails}
+          handleClaim={() => {
+            starknetWallet && starknetUtils.operate(
+              starknetWallet,
+              contractsConfig.CREATURE_SYSTEM,
+              "claim_creature_on_coordinates",
+              [creatureDetails.x, creatureDetails.y]);
+          }}
+        />
       }
       <div ref={myRef}></div>
     </div>
   );
 }
+
+
 
 export default App;

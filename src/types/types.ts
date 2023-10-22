@@ -1,13 +1,17 @@
+import { BigNumberish } from "starknet";
+
 export interface Coords {
-	x: number,
-	y: number,
+    x: number,
+    y: number,
 }
 
 export interface CreatureDetails {
     id?: string,
     name?: string,
     stat?: string,
-    tier?: CreatureTier
+    tier?: CreatureTier,
+    x: BigNumberish,
+    y: BigNumberish
 }
 
 export enum CreatureTier {
