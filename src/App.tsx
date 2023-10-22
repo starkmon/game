@@ -5,7 +5,6 @@ import './App.css'
 import { StarknetWindowObject, connect } from "get-starknet";
 import { fetch_creature_reveal_data } from './utils/reveal_creatures';
 import { Modal } from './components/Modal';
-import { selector } from 'starknet';
 import starknetUtils, { contractsConfig } from './utils/starknetUtils';
 import { CreatureDetails } from './types/types';
 
