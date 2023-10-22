@@ -13,10 +13,7 @@ export function Modal({ show, onClose, creatureDetails, handleClaim }: ModalProp
     return null;
   }
 
-  console.log(creatureDetails);
   const { name, tier } = creatureDetails;
-
-  console.log(name)
 
   return (
     <div className={styles.modalOverlay}>
