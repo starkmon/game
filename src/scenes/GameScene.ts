@@ -1,9 +1,6 @@
-import { claim_creature_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
+import { claim_creature_on_coordinates, creature_details_on_coordinates, creature_on_coordinates } from "../utils/game_actions";
 
-type Coords = {
-	x: number,
-	y: number,
-}
+type Coords = { x: number, y: number }
 
 export default class GameScene extends Phaser.Scene {
 	showDebug = false;
@@ -17,6 +14,11 @@ export default class GameScene extends Phaser.Scene {
 	square: Coords | null = null;
 	prevPlayerPosition: { x: number, y: number } | null = null;
 	spaceKey: Phaser.Input.Keyboard.Key | null = null;
+	creatureLookupTimer: number = 0;
+	spawnCoords: Coords = { x: 0, y: 0 };
+	creaturesAtCoords: Coords[] = [];
+	lookupsDone: { [key: string]: { [key: string]: number } } = {};
+
 
 	feedbackText: Phaser.GameObjects.Text | null = null;
 
@@ -33,19 +35,7 @@ export default class GameScene extends Phaser.Scene {
 		this.load.spritesheet('creatures', 'assets/question-mark.png', { frameWidth: 32, frameHeight: 32 });
 	}
 
-	create() {
-		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
-		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
-		const tileset = this.map.addTilesetImage('tiles');
-		const layer = this.map.createLayer(0, tileset, 0, 0);
-		this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000 }, fillStyle: { color: 0xff0000 } });
-
-		this.feedbackText = this.add.text(400, 300, '', {
-			fontSize: '24px',
-			fill: '#ffffff',
-			align: 'left'
-		}).setOrigin(0.9, -10).setVisible(false);
-
+	createAnimations() {
 		this.anims.create({
 			key: 'left',
 			frames: this.anims.generateFrameNumbers('player', { start: 8, end: 9 }),
@@ -70,9 +60,34 @@ export default class GameScene extends Phaser.Scene {
 			frameRate: 10,
 			repeat: -1
 		});
+	}
+
+	create() {
+
+		this.spawnCoords = {
+			x: 0x100 + Math.random() * 0x10000,
+			y: 0x100 + Math.random() * 0x10000
+		};
+
+		this.spawnCoords = { x: 0x13bb - 32, y: 10 - 32, };
+
+		0x13bb
+		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
+		this.map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
+		const tileset = this.map.addTilesetImage('tiles');
+		const layer = this.map.createLayer(0, tileset, 0, 0);
+		this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000 }, fillStyle: { color: 0xff0000 } });
+
+		this.feedbackText = this.add.text(400, 300, '', {
+			fontSize: '24px',
+			fill: '#ffffff',
+			align: 'left'
+		}).setOrigin(0.9, -10).setVisible(false);
+
 
 		this.player = this.physics.add.sprite(400, 300, 'player', 1);
 
+		this.createAnimations();
 
 		this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 		this.cameras.main.startFollow(this.player);
@@ -86,12 +101,14 @@ export default class GameScene extends Phaser.Scene {
 		this.updatePlayer();
 		this.updateMap();
 		this.lookUpCreatureOnPlayerPosition();
+		this.renderLookedUpCreatures();
 	}
 
 	updateMap() {
 		const origin = this.map.getTileAtWorldXY(this.player.x, this.player.y);
 
 		this.map.forEachTile(tile => {
+
 			const dist = Phaser.Math.Distance.Snake(
 				origin.x,
 				origin.y,
@@ -139,48 +156,51 @@ export default class GameScene extends Phaser.Scene {
 		}
 	}
 
+	// Happens every half a second
 	lookUpCreatureOnPlayerPosition() {
-		const currentPlayerPosition = {
-			x: this.player.x,
-			y: this.player.y,
-		};
+		const time = Date.now();
+		if (time - this.creatureLookupTimer < 500) {
+			return;
+		}
 
-		const distance = 100; // Set the distance around the player you want to check
+		this.creatureLookupTimer = time;
 
-		if (!this.prevPlayerPosition ||
-			currentPlayerPosition.x !== this.prevPlayerPosition.x ||
-			currentPlayerPosition.y !== this.prevPlayerPosition.y
-		) {
+		let { x, y } = this.map.getTileAtWorldXY(this.player.x, this.player.y);
 
-			// Iterate through a range of positions around the player
-			for (let xOffset = -distance; xOffset <= distance; xOffset += 32) {  // Assuming tile size is 32
-				for (let yOffset = -distance; yOffset <= distance; yOffset += 32) {
-					const x = currentPlayerPosition.x + xOffset;
-					const y = currentPlayerPosition.y + yOffset;
+		x += this.spawnCoords.x;
+		y += this.spawnCoords.y;
 
-					// Optionally, you might want to skip checking the player's exact position 
-					// if you've already checked it elsewhere
-					if (x === currentPlayerPosition.x && y === currentPlayerPosition.y) {
-						continue;
-					}
+		const fov = 10; // field of view, range of lookup
 
-					const foundStarkmon = creature_on_coordinates(x, y);
+		for (let ix = x - fov; ix <= x + fov; ix++) {
+			for (let iy = y - fov; iy <= y + fov; iy++) {
+				this.lookupsDone[ix] = this.lookupsDone[ix] || {};
+				if (!this.lookupsDone[ix][iy]) {
+					const foundStarkmon = creature_on_coordinates(ix, iy);
 					if (foundStarkmon) {
-						this.renderCreature(x, y);
+						this.creaturesAtCoords.push({ x: ix - this.spawnCoords.x, y: iy - this.spawnCoords.y });
 					}
+					this.lookupsDone[ix][iy] = 1;
 				}
+
 			}
 		}
 
-		this.prevPlayerPosition = currentPlayerPosition;
+		window.creaturesAtCoords = this.creaturesAtCoords;
+		window.lookupsDone = this.lookupsDone;
+
 	}
 
-	renderCreature(x: number, y: number): void {
-		// Create a sprite at the specified coordinates using the specified frame from the creatures sprite sheet
-		const creature = this.physics.add.sprite(x, y, 'creatures');
+	renderLookedUpCreatures() {
+		let { x, y, pixelX, pixelY, width, height } = this.map.getTileAtWorldXY(this.player.x, this.player.y);
 
-		// Optionally set any other properties or behaviors for the creature sprite
-		// ...
+		this.creaturesAtCoords.forEach(({ x: cx, y: cy }) => {
+			const normalisedX = pixelX + (cx - x) * width;
+			const normalisedY = pixelY + (cy - y) * height;
+
+			this.physics.add.sprite(normalisedX + width / 2, normalisedY + height / 2, 'creatures');
+
+		});
 	}
 
 	handleSpacePress() {
@@ -194,7 +214,7 @@ export default class GameScene extends Phaser.Scene {
 
 	renderSquare(x: number, y: number, size: number): void {
 		if (!this.graphics) return;
-	
+
 		this.graphics.fillStyle(0xff0000, 1);  // Red color
 		this.graphics.fillRect(x, y, size, size);
 	}
