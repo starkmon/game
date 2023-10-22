@@ -109,15 +109,19 @@ export function creatureOnCoordinatesInner(seed: BigNumberish, probability: BigN
 
 export function creatureOnCoordinates(x: BigNumberish, y: BigNumberish) {
 	const { CREATURE_SEED, PROBABILITY } = creatureRevealConfig;
-	console.log(CREATURE_SEED, PROBABILITY, x, y);
+	// console.log(CREATURE_SEED, PROBABILITY, x, y);
 
 	return creatureOnCoordinatesInner(CREATURE_SEED, PROBABILITY, x, y);
 }
 
 export async function getCreatureFromContract(x: string, y: string) {
 	if (creatureOnCoordinates(x, y)) {
-		console.log("revealing creature on ", x, y)
 		return await starknetUtils.callContract("CREATURE_SYSTEM", "creature_on_coordinates", [x, y])
+	}
+	return {
+		id: "0x010678700a4e7fd7b34a67b1f0a60267",
+		name: "0x62656e696d6f6e",
+		stat: "0x27cf"
 	}
 }
 

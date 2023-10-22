@@ -4,10 +4,25 @@ import GameScene from './scenes/GameScene';
 import './App.css'
 import { StarknetWindowObject, connect } from "get-starknet";
 import { fetch_creature_reveal_data } from './utils/reveal_creatures';
+import { Modal } from './components/Modal';
+
+interface CreatureDetails {
+  id?: string,
+  name?: string,
+  stat?: string,
+}
 
 function App() {
   const myRef = useRef(null);
   const [starknetWallet, setWallet] = useState<StarknetWindowObject | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [creatureDetails, setCreatureDetails] = useState<CreatureDetails>({});
+
+  const handleModalVisibility = (show: boolean, details: CreatureDetails) => {
+    setShowModal(show);
+    setCreatureDetails(details);
+  }
+
   useEffect(() => {
     if (myRef.current) {
       if (!starknetWallet) {
@@ -24,7 +39,7 @@ function App() {
         physics: {
           default: 'arcade'
         },
-        scene: [new GameScene(starknetWallet)], // Add your game scenes here
+        scene: [new GameScene(starknetWallet, handleModalVisibility)], // Add your game scenes here
         parent: myRef.current,
       };
 
@@ -45,6 +60,9 @@ function App() {
             Connect wallet
           </button>
         </> : <></>
+      }
+      {showModal &&
+        <Modal show={showModal} onClose={() => handleModalVisibility(false, creatureDetails)} creatureDetails={creatureDetails} />
       }
       <div ref={myRef}></div>
     </div>
