@@ -8,7 +8,7 @@ export const starknetConfig = {
 
 export const contractsConfig: { [key: string]: string } = {
 	WORLD: "0x1cabeaae9e57c1358c1f2392362cc2f3f6b869f548959455222d8446f9f21a9",
-	CREATURE_SYSTEM: "0x069ac89ab195e0118a55964ba9534b5c9487fd2b918564f47e5836bd561142da",
+	CREATURE_SYSTEM: "0x07fd8749fd7326f891d1e01cf7e10ccc0870591c0899ccb00229d7a78f9f6eec",
 	ERC721: "0x05e3959b4351e1ac488e240eb97d52e25ed3b22d3e600976afa711e7f444ed0f",
 };
 
