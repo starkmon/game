@@ -1,10 +1,9 @@
 import { selector, num, BigNumberish } from 'starknet';
-
-import { config } from "./reveal_creatures";
 import { StarknetWindowObject } from 'get-starknet';
 
 export const starknetConfig = {
-	rpc: "https://starknet-goerli.g.alchemy.com/v2/Sxk1XpE0frZCVi3kHq9rESWNwP3dCHYC/"
+	rpc: "https://starknet-goerli.g.alchemy.com/v2/Sxk1XpE0frZCVi3kHq9rESWNwP3dCHYC/",
+	katana: "https://api.cartridge.gg/x/starkmon/katana",
 }
 
 export const contractsConfig: { [key: string]: string } = {
