@@ -36,7 +36,7 @@ export function Modal({ show, onClose, creatureDetails, handleClaim }: ModalProp
       return (<>
         <img
           style={{
-            backgroundImage: `url(${import.meta.env.VITE_PUBLIC_URL}/assets/starkmons/${name}.png)`
+            backgroundImage: `url('${import.meta.env.VITE_PUBLIC_URL}/assets/starkmons/${name}.png')`
           }}
           width={256}
           height={256}

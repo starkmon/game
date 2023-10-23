@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
 import './App.css'
@@ -12,7 +12,7 @@ function App() {
   const myRef = useRef(null);
   const [starknetWallet, setWallet] = useState<StarknetWindowObject | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [creatureDetails, setCreatureDetails] = useState<CreatureDetails>({});
+  const [creatureDetails, setCreatureDetails] = useState<CreatureDetails>();
 
   const handleModalVisibility = (show: boolean, details: CreatureDetails) => {
     setShowModal(show);

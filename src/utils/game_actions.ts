@@ -47,6 +47,6 @@ export function creature_tier(statDecimal: number) {
     }
 }
 
-// Helpers for running in the console
-window.creature_on_coordinates = claim_creature_on_coordinates;
-window.creature_details_on_coordinates = creature_details_on_coordinates;
+// // Helpers for running in the console
+// window.creature_on_coordinates = claim_creature_on_coordinates;
+// window.creature_details_on_coordinates = creature_details_on_coordinates;
