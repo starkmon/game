@@ -51,10 +51,12 @@ function App() {
     <div className="App">
       {!starknetWallet || !starknetWallet.isConnected ?
         <>
-          <h4>Wallet not connected, exploration only mode.</h4>
-          <button onClick={() => connect()}>
-            Connect wallet
-          </button>
+          <div style={{ display: 'flex' }}>
+            <h4>Wallet not connected, exploration only mode.</h4>
+            <button onClick={() => connect()} style={{ margin: 'auto', marginRight: 0, }}>
+              Connect wallet
+            </button>
+          </div>
         </> : <></>
       }
       {showModal &&

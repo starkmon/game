@@ -67,11 +67,18 @@ export default class GameScene extends Phaser.Scene {
 	create() {
 
 		this.spawnCoords = {
-			x: 0x100 + Math.random() * 0x10000,
-			y: 0x100 + Math.random() * 0x10000
+			x: Math.floor(0x100 + Math.random() * 0x10000),
+			y: Math.floor(0x100 + Math.random() * 0x10000)
 		};
 
 		// this.spawnCoords = { x: 0x13bb - 12, y: 10 - 5, };
+
+		alert(
+			`You have spawned at coordinates: ${this.spawnCoords.x},  ${this.spawnCoords.y}\n` +
+			`The world might look the same but different set of creatures spawn on different coordinates.\n` +
+			`A question mark shows when there might be a creature at the coordinate.\n` +
+			`Walk over the the question mark with arrow keys and press space to reveal/claim the creature.`
+		);
 
 
 		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
