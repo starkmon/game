@@ -1,5 +1,4 @@
 
-type Coords = { x: number, y: number }
 import { Coords, CreatureDetails } from "../types/types";
 import { creature_details_on_coordinates, creature_on_coordinates, creature_tier } from "../utils/game_actions";
 import { hexToText } from "../utils/utils";
@@ -72,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
 			y: 0x100 + Math.random() * 0x10000
 		};
 
-		this.spawnCoords = { x: 0x13bb - 12, y: 10 - 5, };
+		// this.spawnCoords = { x: 0x13bb - 12, y: 10 - 5, };
 
 
 		// When loading a CSV map, make sure to specify the tileWidth and tileHeight
