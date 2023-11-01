@@ -99,6 +99,7 @@ export default class GameScene extends Phaser.Scene {
 		this.createAnimations();
 
 		this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+		this.player.setCollideWorldBounds(true);
 		this.cameras.main.startFollow(this.player);
 
 		this.cursors = this.input.keyboard.createCursorKeys();
